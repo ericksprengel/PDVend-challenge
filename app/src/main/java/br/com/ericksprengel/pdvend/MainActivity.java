@@ -3,6 +3,7 @@ package br.com.ericksprengel.pdvend;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String RESULT_ACTION_CHANGE = "br.com.ericksprengel.intent.result.PAYMENT";
     private static final String RESULT_EXTRA_CHANGE = "change";
 
+    public RetainedFragment mDataFragment;
     private View mContentView;
 
     @Override
@@ -29,7 +31,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // find the retained fragment on activity restarts
+        FragmentManager fm = getSupportFragmentManager();
+        mDataFragment = (RetainedFragment) fm.findFragmentByTag("data");
 
+        // create the fragment and data the first time
+        if (mDataFragment == null) {
+            // add the fragment
+            mDataFragment = new RetainedFragment();
+            fm.beginTransaction().add(mDataFragment, "data").commit();
+        }
     }
 
     public void showMessage(String msg, String action, View.OnClickListener listener) {

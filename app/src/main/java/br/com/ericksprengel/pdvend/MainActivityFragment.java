@@ -71,10 +71,7 @@ public class MainActivityFragment extends ListFragment implements View.OnClickLi
         mPaymentCurrentValue.addTextChangedListener(mCurrencyWatcher);
         mNumberFormat.setMinimumFractionDigits(2);
 
-        List<Payment> payments = new ArrayList<>();
-        // payments.add(new Payment(Payment.PaymentType.MONEY, 123.45));
-        // payments.add(new Payment(Payment.PaymentType.CREDIT, 20.35));
-        mAdapter = new PaymentsListAdapter(getLayoutInflater(savedInstanceState), payments);
+        mAdapter = new PaymentsListAdapter(getLayoutInflater(savedInstanceState));
         setListAdapter(mAdapter);
 
         mPaymentCurrentValue.setText(mCurrencyFormat.format(mTotalValue));
@@ -83,8 +80,8 @@ public class MainActivityFragment extends ListFragment implements View.OnClickLi
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         Intent intent = getActivity().getIntent();
 
         if(intent.getAction() != MainActivity.ACTION_PAYMENT) {
@@ -96,6 +93,10 @@ public class MainActivityFragment extends ListFragment implements View.OnClickLi
             Toast.makeText(getContext(), "Error: invalid intet", Toast.LENGTH_LONG).show();
             getMainActivity().finish();
         }
+
+
+        mAdapter.setPayments(getMainActivity().mDataFragment.getPayments());
+
         updateView();
     }
 
@@ -160,10 +161,11 @@ public class MainActivityFragment extends ListFragment implements View.OnClickLi
         private final LayoutInflater mLayoutInflater;
         private List<Payment> mPayments;
 
-        public PaymentsListAdapter(LayoutInflater layoutInflater, List<Payment> payments) {
+        public PaymentsListAdapter(LayoutInflater layoutInflater) {
             mLayoutInflater = layoutInflater;
-            mPayments = payments;
+            mPayments = new ArrayList<>();
         }
+
         @Override
         public int getCount() {
             return mPayments.size();
@@ -222,6 +224,11 @@ public class MainActivityFragment extends ListFragment implements View.OnClickLi
 
         public void addPayment(Payment payment) {
             mPayments.add(payment);
+            notifyDataSetChanged();
+        }
+
+        public void setPayments(List<Payment> payments) {
+            mPayments = payments;
             notifyDataSetChanged();
         }
 
